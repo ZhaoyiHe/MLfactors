@@ -1,4 +1,4 @@
-# Assignment3 : Machine Learning Factor Generator
+# Machine Learning Factor Generator
 
 *Selected Topic: Machine Learning*
 
@@ -34,9 +34,6 @@
 	*  A highly reusable structure, good for both adding functions and debugging
 	*  Functional parts separated.
 
-## Course Output
-	* Design pattern: Factory, Template
-	* Object-oriented form
 
 ## Outlooks
 	*  Multi co-linearity analysis could be added into the data handler, to train the model better.
