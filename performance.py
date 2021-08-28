@@ -1,10 +1,13 @@
+import os
+
 import pandas as pd
-import pandas as pd
+import numpy as np
+import os
 import statsmodels.api as sm
 from scipy import stats
 
 from data_handler import DataHandler
-
+os.chdir('/Users/zoey/PycharmProjects/MachineLearning/MLfactors')
 # Input data sets
 print('Processing data...')
 stock_data = pd.read_csv("stock_data.csv")
@@ -17,6 +20,7 @@ rf_factor_data = rf_factor_data.rename(columns={"Unnamed: 0": "date"}).set_index
     columns={"level_1": "order_book_id", 0: "factor_value"})
 rf_factor_data.date = pd.to_datetime(rf_factor_data.date)
 
+# stock_return_ = stock_data.set_index(['date','order_book_id']).close.groupby(level='order_book_id').apply(lambda x:pd.DataFrame.pct_change(x).shift(-1)).reset_index()
 
 class Evaluation(object):
     """
@@ -53,15 +57,15 @@ class Evaluation(object):
         print("Calculating factor return...")
         factor_return_df = pd.DataFrame(
             data=self.factor_vs_return.groupby(level="date").apply(
-                lambda x: sm.OLS(x.iloc[:, -1], x.iloc[:, -2]).fit().params[0])
+                lambda x: sm.OLS(x.iloc[:, -1], np.vstack((np.ones(len(x)),x.iloc[:, -2])).T).fit().params.x1)
             , index=self.factor_vs_return.index.get_level_values("date").unique())
         self.factor_return = (1 + factor_return_df).cumprod().iloc[-1] - 1
 
     def combine_metrics(self):
         metrics_info = pd.DataFrame([self.IC_mean, self.IR, self.factor_return]).T
-        self.metrics_info = metrics_info.reset_index(drop=True).rename(columns={0: "IC_mean",
-                                                                                1: "IR", 2: "Factor Return"})
-
+        metrics_info= metrics_info.reset_index(drop=True)
+        metrics_info.columns=["IC_mean","IR","Factor Return"]
+        self.metrics_info = metrics_info
 
 if __name__ == "__main__":
     eva = Evaluation(next_stock_returns, rf_factor_data)

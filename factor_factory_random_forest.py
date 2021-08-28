@@ -107,7 +107,7 @@ if __name__ == "__main__":
     stock_returns = data.stock_returns
 
     # For each trading day, train model and predict the probability to get factor data
-    burn_in_period = 15
+    burn_in_period = 30
     trading_dates = all_dates[burn_in_period:]
     factor_dict = dict()
     # model_dict = {}

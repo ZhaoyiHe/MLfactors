@@ -40,7 +40,7 @@ class DataHandler(object):
         self.next_stock_returns = self.stock_data.reset_index(drop=True).set_index(["date", "order_book_id"]).groupby(
             level=1).close.apply(lambda x: x.shift(-1) / x - 1).reset_index(name="returns")
         self.next_labels = self.next_stock_returns.set_index(["date", "order_book_id"]).groupby(
-            level=0).returns.apply(lambda y: y.apply(lambda x: 1 if x >= y.quantile(0.8) else 0)).reset_index(name="label")
+            level=0).returns.apply(lambda y: y.apply(lambda x: 1 if x >= y.quantile(0.9) else 0)).reset_index(name="label")
         # self.next_labels = self.next_stock_returns.set_index(["date", "order_book_id"]).groupby(
         #    level=0).returns.apply(lambda y: y.apply(lambda x:  -1 if x <= y.quantile(0.1) else (1 if x >= y.quantile(0.9) else 0))).reset_index(name="label")
         # index settled down, standardize and filt extreme values
