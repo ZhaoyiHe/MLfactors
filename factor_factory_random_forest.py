@@ -51,8 +51,8 @@ class RandomForestFactor(MLFactor):
         self.X_train = self.X_y[dates[0]:split_date].iloc[:,:-1].reset_index().set_index(['date','order_book_id'])
         self.y_train = self.X_y[dates[0]:split_date].iloc[:,-1]
 
-        self.X_test = self.X_y[split_date:dates[-1]].iloc[:, :-1].reset_index().set_index(['date','order_book_id'])
-        self.y_test = self.X_y[split_date:dates[-1]].iloc[:, -1]
+        self.X_test = self.X_y[split_date:dates[-2]].iloc[:, :-1].reset_index().set_index(['date','order_book_id'])
+        self.y_test = self.X_y[split_date:dates[-2]].iloc[:, -1]
 
         self.all_X = self.X_y.reset_index().set_index(['date','order_book_id'])[dates[0]:dates[-2]].iloc[:, :-1]
         self.all_y = self.X_y.reset_index().set_index(['date', 'order_book_id'])[dates[0]:dates[-2]].iloc[:, -1]
@@ -61,12 +61,12 @@ class RandomForestFactor(MLFactor):
     def train_model(self):
         print("Training_model... ")
         param_grid = {
-            'max_depth': [8,9,10],
-            'n_estimators': [8,10,11,13,15],
+            'max_depth': [8,9,10,11,12],
+            'n_estimators': [8,9,10,12,15],
 
-            'min_samples_split': [2,3]
+            'min_samples_split': [2,3,4]
         }
-        tscv = TimeSeriesSplit(n_splits=4)
+        tscv = TimeSeriesSplit(n_splits=5)
         rf_cv = GridSearchCV(estimator=RandomForestClassifier(random_state=1002,max_features="sqrt"), param_grid=param_grid,
                              scoring='roc_auc', cv=tscv,n_jobs=-1)
         self.trained_model = rf_cv.fit(self.X_train, self.y_train)
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     stock_returns = data.stock_returns
 
     # For each trading day, train model and predict the probability to get factor data
-    burn_in_period = 30
+    burn_in_period = 20
     trading_dates = all_dates[burn_in_period:]
     factor_dict = dict()
     # model_dict = {}

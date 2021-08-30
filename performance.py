@@ -70,3 +70,4 @@ class Evaluation(object):
 if __name__ == "__main__":
     eva = Evaluation(next_stock_returns, rf_factor_data)
     print(eva.metrics_info)
+    eva.metrics_info.to_csv('20_result.csv')
